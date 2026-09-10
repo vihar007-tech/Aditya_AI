@@ -50,6 +50,13 @@ export const SEED_DATA: SeedDocument[] = [
     content: `The Career Development Centre (CDC) drives comprehensive campus placements, personality development, coding bootcamps, mock technical interviews, and international language certifications (including Japanese, German, and French). Top recruiters include Amazon, Microsoft, TCS, Infosys, Wipro, DXC Technologies, Tech Mahindra, and Capgemini with thousands of placement offers annually and highest compensation packages reaching 30+ LPA.`
   },
   {
+    id: "doc-sports",
+    title: "Sports & Athletics Facilities",
+    url: "https://www.adityauniversity.in/facilities",
+    category: "sports",
+    content: `Aditya University campus features extensive sports complexes including full-size cricket grounds, football turf, basketball courts, badminton courts, volleyball courts, and modern indoor gymnasiums with strength and cardio fitness training equipment. Students actively participate in university tournaments, South Zone inter-university competitions, and athletic meets with dedicated coaching and sports scholarship programs.`
+  },
+  {
     id: "doc-contact",
     title: "Official Contact Information & Campus Coordinates",
     url: "https://www.adityauniversity.in/contact-us",

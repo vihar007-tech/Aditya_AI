@@ -9,6 +9,13 @@ export interface SourceReference {
   category?: string;
 }
 
+export interface ActionItem {
+  label: string;
+  url?: string;
+  action_type: 'source' | 'navigation' | 'page';
+  action_page?: string;
+}
+
 export interface SmartAction {
   intent: string;
   action_label: string;
@@ -23,8 +30,11 @@ export interface ChatMessage {
   content: string;
   timestamp: string;
   sources?: SourceReference[];
+  actions?: ActionItem[];
   grounded?: boolean;
   confidence_status?: string;
+  evidence_level?: 'STRONG' | 'MODERATE' | 'WEAK' | 'NONE';
+  answerable?: boolean;
   smart_action?: SmartAction;
   persona?: Persona;
   language?: Language;

@@ -35,9 +35,12 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
   const [language, setLanguage] = useState<Language>('English');
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('Understanding question...');
   const [isRecording, setIsRecording] = useState(false);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
+  const [expandedSnippetUrl, setExpandedSnippetUrl] = useState<string | null>(null);
+  const sessionIdRef = useRef(`session_${Date.now()}`);
 
   // Initial welcome message
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -157,6 +160,10 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
     setMessages(prev => [...prev, userMsg]);
     setInputMessage('');
     setIsLoading(true);
+    setLoadingStatus('Understanding question...');
+
+    const timer1 = setTimeout(() => setLoadingStatus('Searching campus knowledge...'), 400);
+    const timer2 = setTimeout(() => setLoadingStatus('Verifying official university sources...'), 900);
 
     try {
       const response = await fetch('/api/v1/chat', {
@@ -164,7 +171,7 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: textToSend,
-          session_id: 'web_main_session',
+          session_id: sessionIdRef.current,
           language,
           persona
         })
@@ -178,6 +185,9 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
         content: data.answer || 'Aditya University official records verified this information.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         sources: data.sources || [],
+        actions: data.actions || [],
+        evidence_level: data.evidence_level,
+        answerable: data.answerable,
         grounded: data.grounded ?? true,
         confidence_status: data.confidence_status || 'Verified from official university sources',
         smart_action: data.smart_action,
@@ -201,6 +211,8 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
       };
       setMessages(prev => [...prev, fallbackMsg]);
     } finally {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
       setIsLoading(false);
     }
   };
@@ -386,73 +398,163 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
                   >
                     {/* Header info for Bot */}
                     {isBot && (
-                      <div className="flex items-center justify-between mb-2 pb-2 border-b border-slate-100 text-xs text-slate-400">
-                        <div className="flex items-center gap-1.5">
+                      <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2 pb-2 border-b border-slate-100 text-xs text-slate-400">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <span className="font-bold text-slate-700">Aditya Campus AI</span>
-                          {msg.grounded && (
-                            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 text-[10px] font-semibold px-1.5 py-0.5 rounded border border-emerald-200">
+                          {msg.evidence_level === 'STRONG' && (
+                            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-200">
                               <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                              Official Grounding
+                              Strong Official Evidence
+                            </span>
+                          )}
+                          {msg.evidence_level === 'MODERATE' && (
+                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-amber-200">
+                              <ShieldCheck className="w-3 h-3 text-amber-600" />
+                              Partially Verified Evidence
+                            </span>
+                          )}
+                          {msg.evidence_level === 'WEAK' && (
+                            <span className="inline-flex items-center gap-1 bg-sky-50 text-sky-800 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-sky-200">
+                              <Info className="w-3 h-3 text-sky-600" />
+                              Limited Evidence
+                            </span>
+                          )}
+                          {msg.evidence_level === 'NONE' && (
+                            <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-slate-300">
+                              <Info className="w-3 h-3 text-slate-500" />
+                              Unverified Record
                             </span>
                           )}
                         </div>
-                        <span className="text-[11px] text-slate-600">{msg.timestamp}</span>
+                        <span className="text-[11px] text-slate-500">{msg.timestamp}</span>
                       </div>
                     )}
 
                     {/* Text Output with Formatting */}
-                    <div className="space-y-2 whitespace-pre-line">
+                    <div className="space-y-2 whitespace-pre-line text-slate-800">
                       {msg.content}
                     </div>
 
-                    {/* Verified Sources */}
+                    {/* Verified Sources with Snippets */}
                     {isBot && msg.sources && msg.sources.length > 0 && (
                       <div className="mt-3 pt-3 border-t border-slate-100">
-                        <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                          <span>Verified University Sources:</span>
+                        <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Verified University Citations:</span>
+                          </div>
+                          <span className="text-[10px] text-slate-400 font-normal lowercase">click source to preview snippet</span>
                         </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {msg.sources.map((src, sIdx) => (
-                            <a
-                              key={sIdx}
-                              href={src.url}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-[11px] bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-md font-medium transition-colors"
-                            >
-                              <span>{src.title}</span>
-                              <ArrowUpRight className="w-3 h-3 opacity-70" />
-                            </a>
-                          ))}
+                        <div className="space-y-1.5">
+                          <div className="flex flex-wrap gap-1.5">
+                            {msg.sources.map((src, sIdx) => {
+                              const isExpanded = expandedSnippetUrl === `${msg.id}-${src.url}`;
+                              return (
+                                <button
+                                  key={sIdx}
+                                  type="button"
+                                  onClick={() => setExpandedSnippetUrl(isExpanded ? null : `${msg.id}-${src.url}`)}
+                                  className={`inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-md font-medium transition-all ${
+                                    isExpanded
+                                      ? 'bg-sky-600 text-white shadow-xs'
+                                      : 'bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-200'
+                                  }`}
+                                  title="Click to view verified evidence snippet"
+                                >
+                                  <span>{src.title}</span>
+                                  <Info className="w-3 h-3 opacity-70" />
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Expanded Snippet Drawer */}
+                          {msg.sources.map((src, sIdx) => {
+                            const isExpanded = expandedSnippetUrl === `${msg.id}-${src.url}`;
+                            if (!isExpanded) return null;
+                            return (
+                              <div
+                                key={`snippet-${sIdx}`}
+                                className="bg-slate-50 border border-sky-200 rounded-lg p-2.5 text-xs text-slate-700 space-y-1 mt-1 transition-all"
+                              >
+                                <div className="flex items-center justify-between font-semibold text-sky-900 text-[11px]">
+                                  <span>Official Excerpt ({src.title}):</span>
+                                  <a
+                                    href={src.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[10px] text-sky-600 hover:text-sky-800 inline-flex items-center gap-0.5 underline font-normal"
+                                  >
+                                    <span>Open Page</span>
+                                    <ArrowUpRight className="w-2.5 h-2.5" />
+                                  </a>
+                                </div>
+                                <p className="italic text-slate-600 leading-relaxed font-serif text-[11.5px]">
+                                  "{src.snippet || 'Indexed verified excerpt from official Aditya University records.'}"
+                                </p>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
 
-                    {/* Smart Action Link */}
-                    {isBot && msg.smart_action && (
-                      <div className="mt-3 pt-2">
-                        {msg.smart_action.action_url ? (
-                          <a
-                            href={msg.smart_action.action_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
-                          >
-                            <span>↗️ {msg.smart_action.action_label}</span>
-                          </a>
-                        ) : msg.smart_action.action_page ? (
-                          <button
-                            onClick={() => {
-                              if (msg.smart_action?.action_page === 'Academic Programs') onNavigateTab('programs');
-                              else if (msg.smart_action?.action_page === 'Campus Explorer') onNavigateTab('explorer');
-                              else if (msg.smart_action?.action_page === 'Leadership') onNavigateTab('leadership');
-                            }}
-                            className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
-                          >
-                            <span>↗️ {msg.smart_action.action_label}</span>
-                          </button>
-                        ) : null}
+                    {/* Actions & Next Steps */}
+                    {isBot && (
+                      <div className="mt-3 pt-2 flex flex-wrap gap-2">
+                        {/* Render explicit actions list if provided by backend */}
+                        {msg.actions && msg.actions.length > 0 &&
+                          msg.actions.map((act, aIdx) => (
+                            act.url ? (
+                              <a
+                                key={`act-${aIdx}`}
+                                href={act.url}
+                                target={act.url.startsWith('tel:') ? '_self' : '_blank'}
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                              >
+                                <span>↗️ {act.label}</span>
+                              </a>
+                            ) : act.action_page ? (
+                              <button
+                                key={`act-${aIdx}`}
+                                onClick={() => {
+                                  if (act.action_page === 'Academic Programs') onNavigateTab('programs');
+                                  else if (act.action_page === 'Campus Explorer') onNavigateTab('explorer');
+                                  else if (act.action_page === 'Leadership') onNavigateTab('leadership');
+                                }}
+                                className="inline-flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                              >
+                                <span>↗️ {act.label}</span>
+                              </button>
+                            ) : null
+                          ))
+                        }
+
+                        {/* Backwards compatible fallback smart action */}
+                        {(!msg.actions || msg.actions.length === 0) && msg.smart_action && (
+                          msg.smart_action.action_url ? (
+                            <a
+                              href={msg.smart_action.action_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                            >
+                              <span>↗️ {msg.smart_action.action_label}</span>
+                            </a>
+                          ) : msg.smart_action.action_page ? (
+                            <button
+                              onClick={() => {
+                                if (msg.smart_action?.action_page === 'Academic Programs') onNavigateTab('programs');
+                                else if (msg.smart_action?.action_page === 'Campus Explorer') onNavigateTab('explorer');
+                                else if (msg.smart_action?.action_page === 'Leadership') onNavigateTab('leadership');
+                              }}
+                              className="inline-flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                            >
+                              <span>↗️ {msg.smart_action.action_label}</span>
+                            </button>
+                          ) : null
+                        )}
                       </div>
                     )}
                   </div>
@@ -517,7 +619,7 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
               </div>
               <div className="bg-white border border-slate-200 p-3.5 rounded-2xl rounded-tl-sm shadow-sm text-slate-600 text-xs flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-                <span>Searching verified university records & grounding answer...</span>
+                <span className="font-medium text-amber-900">{loadingStatus}</span>
               </div>
             </div>
           )}

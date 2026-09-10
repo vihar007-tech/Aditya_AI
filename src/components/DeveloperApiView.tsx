@@ -8,7 +8,11 @@ import {
   Terminal,
   Globe,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  ShieldCheck,
+  FileDown,
+  FileText,
+  BookOpen
 } from 'lucide-react';
 
 export const DeveloperApiView: React.FC = () => {
@@ -30,6 +34,23 @@ export const DeveloperApiView: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [activeCodeTab, setActiveCodeTab] = useState<'curl' | 'python' | 'javascript'>('curl');
+
+  const [testResults, setTestResults] = useState<any | null>(null);
+  const [isRunningTests, setIsRunningTests] = useState(false);
+
+  const handleRunTests = async () => {
+    setIsRunningTests(true);
+    setTestResults(null);
+    try {
+      const res = await fetch('/api/v1/tests/run');
+      const data = await res.json();
+      setTestResults(data);
+    } catch (err: any) {
+      setTestResults({ summary: 'Error running test suite: ' + err.message, allPassed: false, results: [] });
+    } finally {
+      setIsRunningTests(false);
+    }
+  };
 
   const copyToClipboard = (text: string, tabId: string) => {
     navigator.clipboard.writeText(text);
@@ -156,6 +177,37 @@ console.log(data);`;
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span>API Gateway Online</span>
           </div>
+        </div>
+
+        {/* Technical Architecture & Documentation Download Card */}
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200 p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="p-2.5 bg-amber-100 rounded-lg text-amber-800 shrink-0 mt-0.5">
+              <BookOpen className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-slate-900 text-base">
+                  Aditya Campus AI System Architecture & Technical Manual
+                </h3>
+                <span className="bg-amber-200 text-amber-900 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full">
+                  DOCX
+                </span>
+              </div>
+              <p className="text-slate-600 text-xs mt-1 max-w-2xl leading-relaxed">
+                Complete Word document covering full technology stack (Gemini API, Node.js, Express, React 19, TypeScript), hybrid RAG retrieval mechanics, multi-persona prompt orchestration, module-by-module breakdown, zero-hallucination protocols, and automated verification suites.
+              </p>
+            </div>
+          </div>
+          <a
+            id="download-doc-card-btn"
+            href="/Aditya_Campus_AI_Technical_Documentation.docx"
+            download="Aditya_Campus_AI_Technical_Documentation.docx"
+            className="flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-xs transition-colors shrink-0"
+          >
+            <FileDown className="w-4 h-4" />
+            <span>Download Word Document (.docx)</span>
+          </a>
         </div>
 
         {/* API Sandbox Grid */}
@@ -290,6 +342,88 @@ console.log(data);`;
               <span>{copiedTab === activeCodeTab ? 'Copied' : 'Copy Code'}</span>
             </button>
           </div>
+        </div>
+
+        {/* Automated Verification Test Suite (TEST 1 to TEST 8) */}
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                <h3 className="font-bold text-slate-900 text-base">
+                  Automated Behavioral Verification Suite (TEST 1 to TEST 8)
+                </h3>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Executes automated tests validating answerability, citations, anti-hallucination, multi-turn memory, and multilingual support without redirect-only regressions.
+              </p>
+            </div>
+            <button
+              onClick={handleRunTests}
+              disabled={isRunningTests}
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow-xs transition-colors shrink-0"
+            >
+              {isRunningTests ? (
+                <>
+                  <Terminal className="w-3.5 h-3.5 animate-spin" />
+                  <span>Running Suite...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Run Verification Suite</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {testResults && (
+            <div className="space-y-3 pt-2">
+              <div
+                className={`p-3 rounded-lg border text-xs font-semibold flex items-center justify-between ${
+                  testResults.allPassed
+                    ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                    : 'bg-rose-50 text-rose-900 border-rose-200'
+                }`}
+              >
+                <span>{testResults.summary}</span>
+                <span className="uppercase tracking-wider px-2 py-0.5 rounded text-[10px] font-bold bg-white/70">
+                  {testResults.allPassed ? 'ALL VERIFIED' : 'TESTS FAILED'}
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                {testResults.results.map((test: any) => (
+                  <div
+                    key={test.id}
+                    className="p-3 rounded-lg border border-slate-200 bg-slate-50/70 text-xs space-y-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                            test.passed ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                          }`}
+                        >
+                          {test.id}
+                        </span>
+                        <span className="font-semibold text-slate-800">{test.name}</span>
+                      </div>
+                      <span className="text-[11px] text-slate-400 font-mono">{test.durationMs}ms</span>
+                    </div>
+                    <div className="text-[11px] text-slate-500">
+                      <span className="font-medium text-slate-700">Expected: </span>
+                      {test.expected}
+                    </div>
+                    <div className="text-[11px] text-slate-600 font-mono bg-white p-1.5 rounded border border-slate-200">
+                      <span className="font-medium text-slate-700">Actual: </span>
+                      {test.actual}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Embed Script Snippet for adityauniversity.in */}
