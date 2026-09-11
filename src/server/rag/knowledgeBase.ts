@@ -158,6 +158,44 @@ export const SEED_DOCUMENTS: SeedDocument[] = [
       "B.Tech in Artificial Intelligence & Machine Learning (AI & ML) features specialized certified tracks in association with Microsoft Azure and Google Cloud Professional Machine Learning Engineer curricula.",
       "B.Tech Computer Science & Engineering (CSE) integrates an on-campus Google Cloud Center of Excellence and SAP Next-Gen Lab training for enterprise ERP software engineering."
     ]
+  },
+  {
+    id: "doc-fee-structure",
+    title: "Tuition Fee Structure, Scholarships & Regulations",
+    url: "https://www.adityauniversity.in/admissions",
+    category: "fees",
+    source_type: "official",
+    keywords: ["fee", "fees", "fee structure", "tuition", "tuition fee", "cost", "b.tech fee", "ai & ml fee", "scholarship", "scholarships", "auet", "2025", "2026", "hostel fee"],
+    paragraphs: [
+      "Undergraduate tuition fees for B.Tech programs (including Artificial Intelligence & Machine Learning, Computer Science, Data Science, and Electronics) at Aditya University are regulated under Andhra Pradesh State Higher Education Regulatory Commission norms and AUET merit frameworks, with base tuition typically ranging between INR 70,000 and INR 1,20,000 per academic year depending on category (Convenor/EAPCET quota vs Management quota).",
+      "Aditya University Entrance Test (AUET) merit scholarships provide substantial fee relief, including up to 100% tuition waivers for state and national rankers, 50% waivers for top percentile scorers, and dedicated athletic sports scholarships.",
+      "For upcoming academic cohorts (such as the 2026 academic admissions cycle), the official detailed fee notification and exact installment timelines are officially published through the university admission brochure on https://www.adityauniversity.in/admissions. Previous year fee bands serve as the official indicative benchmark until the new notification circular is gazetted."
+    ]
+  },
+  {
+    id: "doc-aiml-program",
+    title: "B.Tech in Artificial Intelligence & Machine Learning (AI & ML)",
+    url: "https://www.adityauniversity.in/academics",
+    category: "program",
+    source_type: "official",
+    keywords: ["ai", "ml", "ai & ml", "ai/ml", "artificial intelligence", "machine learning", "b.tech ai & ml", "curriculum", "eligibility", "labs", "nvidia"],
+    paragraphs: [
+      "The four-year B.Tech in Artificial Intelligence & Machine Learning (AI & ML) at Aditya University is an advanced engineering program focusing on mathematical foundations of AI, neural networks, computer vision, natural language processing, reinforcement learning, and generative models.",
+      "Students in the AI & ML program train in dedicated NVIDIA GPU computing laboratories, develop enterprise AI solutions using TensorFlow and PyTorch, and complete mandatory cloud micro-credentials from Google Cloud and Microsoft Azure.",
+      "Eligibility criteria for B.Tech AI & ML requires passing 10+2 / Intermediate examination with Mathematics, Physics, and Chemistry/Computer Science with minimum qualifying marks, alongside rank qualification in AP EAPCET, JEE Main, or AUET."
+    ]
+  },
+  {
+    id: "doc-faculty-aiml",
+    title: "School of Computing & AI Faculty Directory",
+    url: "https://www.adityauniversity.in/academics",
+    category: "faculty",
+    source_type: "official",
+    keywords: ["faculty", "professors", "hod", "school of computing", "cse faculty", "ai faculty", "teachers", "who teaches"],
+    paragraphs: [
+      "The School of Computing and Department of Artificial Intelligence & Machine Learning at Aditya University is led by distinguished academicians and industry veterans with doctoral research backgrounds from reputed IITs, NITs, and central universities.",
+      "Faculty members specialize in applied deep learning, computer vision, data analytics, autonomous robotics, and natural language processing, actively mentoring students through hackathons, patent filings, and IEEE research publications."
+    ]
   }
 ];
 

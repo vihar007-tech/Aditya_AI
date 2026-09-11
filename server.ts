@@ -60,7 +60,7 @@ const feedbackLogs: FeedbackRecord[] = [
 app.get("/health", (req: Request, res: Response) => {
   res.json({
     status: "ok",
-    model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+    model: process.env.GEMINI_MODEL || "gemini-3.6-flash",
     knowledge_base: "ready",
     version: "1.0.0",
     indexed_chunks: knowledgeBase.getAllChunks().length,

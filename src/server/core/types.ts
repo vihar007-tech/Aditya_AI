@@ -19,10 +19,17 @@ export type IntentType =
   | 'sports'
   | 'career'
   | 'admissions'
+  | 'fees'
+  | 'academics'
+  | 'program'
   | 'events'
   | 'regulations'
   | 'contact'
   | 'navigation'
+  | 'study_planner'
+  | 'attendance'
+  | 'resume'
+  | 'interview'
   | 'general_conversation'
   | 'unknown';
 

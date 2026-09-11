@@ -24,7 +24,7 @@ interface AdminDashboardProps {
 export const AdminDashboardView: React.FC<AdminDashboardProps> = ({ onNavigateTab }) => {
   const [healthData, setHealthData] = useState<any>({
     status: 'ok',
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3.6-flash',
     knowledge_base: 'ready',
     version: '1.0.0',
     indexed_chunks: 38,
