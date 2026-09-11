@@ -101,7 +101,7 @@ export class CampusAIService {
 
     // 6. Build citations and smart actions
     const sources = this.buildSources(retrieved, analysis.intent, evaluation);
-    const actions = this.buildActions(analysis.intent, evaluation, sources);
+    const actions = this.buildActions(analysis.intent, evaluation, sources, rawMessage);
     const smartAction = this.buildSmartAction(analysis.intent, sources);
 
     // 7. Formulate structured response
@@ -229,7 +229,7 @@ export class CampusAIService {
     }
 
     const sources = this.buildSources(retrieved, analysis.intent, evaluation);
-    const actions = this.buildActions(analysis.intent, evaluation, sources);
+    const actions = this.buildActions(analysis.intent, evaluation, sources, rawMessage);
     const smartAction = this.buildSmartAction(analysis.intent, sources);
 
     const response: CampusResponse = {
@@ -451,8 +451,57 @@ export class CampusAIService {
     return Array.from(uniqueMap.values());
   }
 
-  private buildActions(intent: string, evaluation: EvidenceEvaluation, sources: Source[]): Action[] {
+  private buildActions(intent: string, evaluation: EvidenceEvaluation, sources: Source[], rawMessage: string = ''): Action[] {
     const actions: Action[] = [];
+    const msgLower = rawMessage.toLowerCase();
+
+    // Map Navigation actions for physical destinations (Section 8)
+    if (/\b(library|central library|books|reading room)\b/i.test(msgLower)) {
+      actions.push({
+        label: 'Knowledge Resource Centre (Central Library)',
+        url: 'https://www.google.com/maps/dir/?api=1&destination=17.0898,82.0674',
+        action_type: 'navigation'
+      });
+      actions.push({
+        label: 'Open Map & Directions',
+        url: 'https://www.google.com/maps/search/?api=1&query=Aditya+University+Surampalem+Library',
+        action_type: 'navigation'
+      });
+    } else if (/\b(health|hospital|clinic|doctor|medical|ambulance)\b/i.test(msgLower)) {
+      actions.push({
+        label: '24/7 University Health Care Centre',
+        url: 'https://www.google.com/maps/dir/?api=1&destination=17.0905,82.0669',
+        action_type: 'navigation'
+      });
+      actions.push({
+        label: 'Call Emergency Medical (+91 9989 776661)',
+        url: 'tel:+919989776661',
+        action_type: 'source'
+      });
+    } else if (/\b(hostel|dorm|accommodation|boys hostel|girls hostel)\b/i.test(msgLower)) {
+      actions.push({
+        label: 'Aditya Residential Hostels (North-East Zone)',
+        url: 'https://www.google.com/maps/dir/?api=1&destination=17.0885,82.0660',
+        action_type: 'navigation'
+      });
+      actions.push({
+        label: 'Explore Hostels in Campus Explorer',
+        action_type: 'page',
+        action_page: 'Campus Explorer'
+      });
+    } else if (/\b(placement|cdc|career development|interview center)\b/i.test(msgLower)) {
+      actions.push({
+        label: 'Career Development Centre (Ramanujan Block)',
+        url: 'https://www.google.com/maps/dir/?api=1&destination=17.0912,82.0681',
+        action_type: 'navigation'
+      });
+    } else if (/\b(sports|cricket|ground|stadium|gym|basketball)\b/i.test(msgLower)) {
+      actions.push({
+        label: 'Sports Arena & Athletic Complex',
+        url: 'https://www.google.com/maps/dir/?api=1&destination=17.0920,82.0690',
+        action_type: 'navigation'
+      });
+    }
 
     if (intent === 'contact') {
       actions.push({
@@ -490,7 +539,7 @@ export class CampusAIService {
         action_type: 'page',
         action_page: 'Academic Programs'
       });
-    } else if (sources[0]) {
+    } else if (sources[0] && actions.length === 0) {
       actions.push({
         label: `View Official Source (${sources[0].title})`,
         url: sources[0].url,

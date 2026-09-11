@@ -101,3 +101,124 @@ export interface FeedbackSummary {
   unhelpful: number;
   satisfaction_rate: number;
 }
+
+export type UserRole = 'user' | 'admin';
+
+export interface CampusLocation {
+  id: string;
+  name: string;
+  category: string;
+  landmark: string;
+  coordinates: { lat: number; lng: number };
+  directionsUrl: string;
+  hours: string;
+  description: string;
+}
+
+export interface StudySubject {
+  id: string;
+  name: string;
+  priority: 'High' | 'Medium' | 'Low';
+  examDate: string;
+  difficulty: 'Hard' | 'Moderate' | 'Easy';
+  targetHours: number;
+  completedHours: number;
+}
+
+export interface StudySession {
+  id: string;
+  subjectId: string;
+  subjectName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  durationMinutes: number;
+  topic: string;
+  isCompleted: boolean;
+  isMissed: boolean;
+}
+
+export interface StudyPlanDay {
+  date: string;
+  dayName: string;
+  totalStudyMinutes: number;
+  sessions: StudySession[];
+}
+
+export interface AttendanceRecord {
+  id: string;
+  subjectCode: string;
+  subjectName: string;
+  totalClasses: number;
+  attendedClasses: number;
+  minRequiredPercent: number;
+  facultyName: string;
+}
+
+export interface AttendanceAnalysisResult {
+  record: AttendanceRecord;
+  currentPercent: number;
+  status: 'safe' | 'warning' | 'critical';
+  daysAffordToMiss: number;
+  classesNeededToRecover: number;
+  alertMessage: string;
+}
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'deadline' | 'event' | 'fee' | 'study' | 'attendance' | 'system';
+  priority: 'high' | 'medium' | 'low';
+  scheduledAt: string;
+  isRead: boolean;
+  actionUrl?: string;
+  actionTab?: string;
+}
+
+export interface ResumeAnalysisResult {
+  overallScore: number;
+  summary: string;
+  atsCompatibilityPercent: number;
+  extractedSkills: string[];
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  strengths: string[];
+  improvements: string[];
+  experienceGaps: string[];
+  benchmarkComparison: {
+    role: string;
+    benchmarkScore: number;
+    percentile: number;
+    skillsCoveragePercent: number;
+  };
+}
+
+export interface BulletRewriteResult {
+  original: string;
+  rewritten: {
+    concise: string;
+    impact: string;
+    technical: string;
+    atsFriendly: string;
+  };
+}
+
+export interface InterviewQuestion {
+  id: number;
+  category: 'Technical' | 'Behavioral' | 'HR' | 'Case-based';
+  question: string;
+  tips: string;
+  suggestedStructure: string;
+}
+
+export interface InterviewEvaluation {
+  relevanceScore: number;
+  clarityScore: number;
+  starStructureScore: number;
+  fillerWordsCount: number;
+  speakingPaceWordCount: number;
+  strengths: string[];
+  constructiveCritique: string[];
+  improvedSampleAnswer: string;
+}

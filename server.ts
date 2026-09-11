@@ -7,6 +7,8 @@ import { campusAIService } from "./src/server/services/campusAIService";
 import { knowledgeBase } from "./src/server/rag/knowledgeBase";
 import { runAllTests } from "./src/server/tests/campusAITests";
 import { ACADEMIC_CATALOG } from "./src/data/academicPrograms";
+import { CAMPUS_LOCATIONS } from "./src/data/campusLocations";
+import { NotificationService, AttendanceService } from "./src/server/services/studentToolkitService";
 import { Persona, Language } from "./src/server/core/types";
 
 dotenv.config();
@@ -269,13 +271,49 @@ app.get("/api/v1/analytics", (req: Request, res: Response) => {
   });
 });
 
+// Admin Permission Guard (Section 4)
+const requireAdmin = (req: Request, res: Response, next: any) => {
+  const role = req.headers["x-user-role"] || req.query.role;
+  if (role !== "admin") {
+    return res.status(403).json({
+      error: "Access restricted",
+      message: "Administrator privileges required to access this endpoint."
+    });
+  }
+  next();
+};
+
 // 7. Academic Programs Catalog
 app.get("/api/v1/programs", (req: Request, res: Response) => {
   res.json(ACADEMIC_CATALOG);
 });
 
-// 8. Admin Knowledge Refresh endpoint (Section 25 & 26)
-app.post("/api/v1/knowledge/refresh", (req: Request, res: Response) => {
+// 8. Campus Locations Navigation API
+app.get("/api/v1/campus/locations", (req: Request, res: Response) => {
+  res.json({
+    status: "success",
+    locations: CAMPUS_LOCATIONS
+  });
+});
+
+// 9. Student Notifications API
+app.get("/api/v1/student/notifications", (req: Request, res: Response) => {
+  res.json({
+    status: "success",
+    notifications: NotificationService.getNotifications()
+  });
+});
+
+// 10. Student Attendance API
+app.get("/api/v1/student/attendance", (req: Request, res: Response) => {
+  res.json({
+    status: "success",
+    records: AttendanceService.getDemoRecords()
+  });
+});
+
+// 11. Admin Knowledge Refresh endpoint (Section 25 & 26) - Protected
+app.post("/api/v1/knowledge/refresh", requireAdmin, (req: Request, res: Response) => {
   const totalChunks = knowledgeBase.rebuildIndex();
   res.json({
     status: "success",
@@ -285,7 +323,7 @@ app.post("/api/v1/knowledge/refresh", (req: Request, res: Response) => {
   });
 });
 
-// 9. Automated Test Runner (Section 41)
+// 12. Automated Test Runner (Section 41)
 app.get("/api/v1/tests/run", async (req: Request, res: Response) => {
   try {
     const report = await runAllTests();
