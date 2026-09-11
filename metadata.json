@@ -1,6 +1,6 @@
 {
   "name": "Aditya Campus AI",
   "description": "The intelligent digital campus assistant for Aditya University with grounded RAG, multilingual support, academic catalog, and campus intelligence.",
-  "requestFramePermissions": ["microphone"],
+  "requestFramePermissions": ["microphone", "camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -1,199 +1,154 @@
 # 🎓 Aditya Campus AI
 
-### Your Intelligent Guide to Aditya University
+### AI for Campus Life — Official Intelligent Campus Platform for Aditya University
 
-**🚀 Live Demo:**
-https://aditya-ai-theta.vercel.app/
+**🚀 Live Demo:**  
+[https://aditya-ai-theta.vercel.app/](https://aditya-ai-theta.vercel.app/)
 
-Aditya Campus AI is an AI-powered campus assistant designed to help students, parents, faculty, and visitors quickly find information about **Aditya University**.
+Aditya Campus AI is a unified intelligent digital layer designed for students, parents, faculty, and administrators of **Aditya University**. Instead of navigating across fragmented portals and static webpages, users receive **context-aware, source-grounded answers**, academic toolkits, and campus navigation through one seamless platform.
 
-Instead of searching through multiple university webpages, users can simply ask questions in natural language and receive **context-aware, source-grounded answers**.
+---
+
+## 🚀 Live Demo
+
+* **Production URL:** [https://aditya-ai-theta.vercel.app/](https://aditya-ai-theta.vercel.app/)
+* **Official University Portal:** [https://www.adityauniversity.in/](https://www.adityauniversity.in/)
 
 ---
 
 ## ✨ Features
 
-* 🤖 **AI Campus Assistant** — Ask questions naturally.
-* 🔎 **RAG-powered answers** — Uses official university information.
-* 🔗 **Source Citations** — Shows information sources.
-* 🧠 **Conversation Memory** — Understands follow-up questions.
-* 🌐 **Multilingual Support** — English, Telugu & Hindi.
-* 🏫 **Campus Explorer** — Explore facilities and services.
-* 👥 **Leadership Directory** — Access university leadership information.
-* 📊 **Campus Insights** — Analyze common question categories.
-* 🔌 **Developer API** — Integrate the assistant into websites and applications.
-* 🛡️ **Anti-Hallucination Design** — Avoids inventing unverifiable university information.
+### 👤 User Experience
+* **AI Campus Assistant** — Natural conversational assistant with voice input, speech output, follow-up memory, and verified source citations. Answers directly first, provides sources second, and avoids unsolicited redirects.
+* **Academic Programs** — Comprehensive directory of Undergraduate, Postgraduate, Doctoral, and Diploma programs with search, eligibility criteria, curriculum details, and direct AI inquiry.
+* **Campus Explorer** — Interactive exploration of campus facilities (Libraries, Hostels, Laboratories, Sports Complex, Food Courts, Healthcare, Innovation Centres) with verified coordinates and map navigation.
+* **Smart Study Planner** — Deterministic adaptive study scheduler that prioritizes subjects, detects schedule conflicts, and rebalances study plans when sessions are marked as missed. Supports optional Google Calendar synchronization.
+* **Smart Attendance Analyzer** — Mathematical attendance calculator determining safe absences before falling below configured mandatory thresholds (75%), providing automated warning triggers.
+* **AI Resume Analyzer** — Evaluates resume quality scores, estimates ATS compatibility against target job descriptions, identifies skill gaps, and suggests contextual bullet improvements without fabricating metrics.
+* **AI Interview Coach** — Interactive mock interview simulator across Technical, HR, Behavioral, and Case roles, offering structured constructive feedback on relevance, pace, and clarity, with optional presentation framing analysis.
+* **Campus Notifications** — Centralized in-app notifications system alerting students to academic deadlines, examination schedules, attendance thresholds, and campus events.
+
+### 🛡️ Admin Experience
+* **Leadership & Directory** — Verified administrative directory covering the Chancellor, Vice Chancellor, Pro Vice Chancellors, Deans, and Heads of Departments.
+* **Campus Insights** — Aggregated analytics dashboard illustrating query trends, popular facility inquiries, multilingual distribution, and unanswered information gaps.
+* **Knowledge Centre** — Administrative crawler status console, document chunk tracker, incremental knowledge refresh controls, failed page logs, and granular Source Explorer.
+* **Developer REST API** — Interactive documentation and test harness enabling external integration into student portals, digital kiosks, and mobile applications.
 
 ---
 
-## 🧠 How It Works
+## 🧠 AI Architecture
+
+Campus AI adheres to a strict **Ask → Understand → Retrieve → Verify → Answer → Act** pipeline:
 
 ```text
-Official University Website
+User Question / Voice Input
           ↓
-    Data Ingestion
+  Query & Intent Router
           ↓
-   Cleaning + Chunking
+  Hybrid RAG Retrieval (Semantic + Keyword + Metadata)
           ↓
- Vector Knowledge Base
+  Evidence Evaluation (Strong / Moderate / Weak / None)
           ↓
-      LangChain RAG
+  Gemini 2.5 Flash Grounding
           ↓
-       Gemini AI
-          ↓
- Grounded Answer + Sources
+  Grounded Answer + Official Citations + Smart Actions
 ```
 
-The Streamlit/web interface and API use the same AI service, allowing Campus AI to be integrated into different platforms.
+* **Answer-First Policy**: Direct factual answers are generated first. Official university links serve as verifiable citations.
+* **Anti-Hallucination**: When evidence is insufficient, the system explicitly states what could not be verified rather than fabricating details.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Technology
 
-* **Python**
-* **Google Gemini**
-* **LangChain**
-* **RAG**
-* **FAISS / Chroma**
-* **Streamlit**
-* **FastAPI**
-* **BeautifulSoup**
-* **Pydantic**
+* **Frontend**: React 18, TypeScript, Tailwind CSS, Lucide Icons, Web Speech API
+* **Backend & API**: Express.js / Node.js, Python / FastAPI, LangChain, @google/genai (Gemini 2.5 Flash)
+* **Knowledge & Retrieval**: Vector search, BM25 keyword matching, structured document metadata store
+* **Deployment**: Cloud Run / Vercel with zero-configuration fallbacks
 
 ---
 
-## 🚀 Getting Started
+## 🌐 Knowledge Sources
 
-### 1. Clone the repository
+All institutional data is ingested from official public Aditya University resources:
+* Overview, Governance & Leadership: `https://www.adityauniversity.in/about-us/`
+* Academic Regulations & Faculties: `https://www.adityauniversity.in/`
+* Campus Facilities: `https://www.adityauniversity.in/facilities`
+* Official Contact: `https://www.adityauniversity.in/contact-us`
+* Admissions & FAQs: `https://www.adityauniversity.in/faqs`
+
+---
+
+## 💻 Installation
 
 ```bash
+# Clone the repository
 git clone https://github.com/your-username/aditya-campus-ai.git
 cd aditya-campus-ai
-```
 
-### 2. Install dependencies
+# Install frontend and server dependencies
+npm install
 
-```bash
+# (Optional) Python environment for custom crawlers
 pip install -r requirements.txt
 ```
 
-### 3. Configure API Key
+---
 
-Create a `.env` file:
+## 🔑 Environment Variables
+
+Configure your `.env` file based on `.env.example`:
 
 ```env
-GOOGLE_API_KEY=your_google_ai_studio_api_key
-```
+# Required for Gemini AI Studio operations
+GEMINI_API_KEY="your-google-ai-studio-api-key"
+GEMINI_MODEL="gemini-2.5-flash"
 
-**Never commit your API key to GitHub.**
-
-### 4. Build the knowledge base
-
-```bash
-python -m rag.ingest
-```
-
-### 5. Run the application
-
-```bash
-streamlit run app.py
-```
-
-### 6. Run the API
-
-```bash
-uvicorn api:app --reload
+# Optional external integrations (gracefully degraded if omitted)
+GOOGLE_MAPS_API_KEY=""
+GOOGLE_CLIENT_ID=""
 ```
 
 ---
 
 ## 🔌 API
 
-### Endpoint
-
-```http
-POST /api/v1/chat
-```
-
-### Request
-
-```json
-{
-  "message": "What facilities are available on campus?",
-  "session_id": "demo-123",
-  "language": "en"
-}
-```
-
-### Response
-
-```json
-{
-  "answer": "Aditya University provides...",
-  "sources": [
-    {
-      "title": "Campus Facilities",
-      "url": "https://www.adityauniversity.in/facilities"
-    }
-  ],
-  "session_id": "demo-123"
-}
-```
-
-The API makes it possible to integrate Campus AI into the **official university website, student portal, mobile application, or other platforms**.
-
----
-
-## 🌐 Knowledge Sources
-
-The knowledge base uses publicly available information from official Aditya University sources, including:
-
-* University Overview
-* Leadership
-* Campus Facilities
-* Contact Information
-* FAQs
-* Other approved university pages
-
-Official website:
-
-https://www.adityauniversity.in/
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Server health and operational status |
+| `POST` | `/api/v1/chat` | Main Campus AI chatbot endpoint with RAG |
+| `POST` | `/api/v1/chat/stream` | Streamed response generation |
+| `GET` | `/api/v1/sources` | Verified university knowledge sources |
+| `GET` | `/api/v1/programs` | Academic programs catalog |
+| `GET` | `/api/v1/locations` | Verified campus locations and map queries |
+| `POST` | `/api/v1/planner` | Study schedule generator and rebalancer |
+| `POST` | `/api/v1/attendance/analyze` | Attendance and safe absence calculator |
+| `POST` | `/api/v1/resume/analyze` | Resume scorer and ATS compatibility analyzer |
+| `POST` | `/api/v1/interview/start` | Interview session generator |
+| `POST` | `/api/v1/interview/feedback` | Interview answer evaluator |
+| `GET` | `/api/v1/admin/insights` | Campus query analytics (Admin protected) |
+| `GET` | `/api/v1/admin/crawl-status` | Crawler metrics and source index (Admin protected) |
 
 ---
 
 ## 🔐 Security
 
-* API keys are stored using environment variables/secrets.
-* No credentials are hard-coded.
-* Only approved public university sources are ingested.
-* The AI is instructed not to fabricate information when reliable sources are unavailable.
+* Admin routes enforce server-side token authorization (`AdminToken`).
+* All API keys are isolated on the server-side; client never exposes Gemini secrets.
+* Crawling is strictly restricted to `adityauniversity.in` and `www.adityauniversity.in`.
+* Private user documents (resumes, interview answers) are processed in-memory and never permanently exposed.
 
 ---
 
-## 🚀 Future Scope
+## 🧪 Demo Mode
 
-* Student-specific authenticated services
-* Timetable & attendance integration
-* Examination notifications
-* Campus navigation
-* Voice assistant
-* Mobile application
-* ERP/LMS integration
+* Student tools (Attendance, Planner, Benchmarks) include clearly labeled **"Demo Dataset"** options for instant demonstration without manual typing.
+* Missing external credentials (Google Maps, Google Calendar) automatically degrade to verified external URLs and local offline state without erroring.
 
 ---
 
-## 🏆 Hackathon Vision
+## 🔮 Future Scope
 
-> **“From searching for campus information to simply asking for it.”**
-
-Aditya Campus AI aims to become an intelligent digital layer connecting students, parents, faculty, visitors, and university services through one conversational interface.
-
-### 🔗 Project Links
-
-**Live Deployment:**
-https://aditya-ai-theta.vercel.app/
-
-**Official University:**
-https://www.adityauniversity.in/
-
-### Built with ❤️ using Gemini + LangChain
+* Direct single-sign-on integration with University ERP/Student Information System
+* Physical digital kiosk hardware deployment across campus libraries and entrances
+* WhatsApp and Telegram campus notification gateways
