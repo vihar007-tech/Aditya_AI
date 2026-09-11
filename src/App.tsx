@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { AssistantView } from './components/AssistantView';
@@ -20,6 +20,7 @@ import { KnowledgeCenterView } from './components/KnowledgeCenterView';
 import { DeveloperApiView } from './components/DeveloperApiView';
 import { AdminAccessRestricted } from './components/AdminAccessRestricted';
 import { FloatingWidget } from './components/FloatingWidget';
+import { LocationPromptModal } from './components/LocationPromptModal';
 import { UserRole } from './types';
 
 export default function App() {
@@ -28,6 +29,38 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showWidget, setShowWidget] = useState(false);
   const [pendingPrompt, setPendingPrompt] = useState<string | undefined>(undefined);
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+
+  useEffect(() => {
+    try {
+      const hasPrompted = localStorage.getItem('has_prompted_location');
+      if (!hasPrompted) {
+        setShowLocationPrompt(true);
+      }
+    } catch {
+      // LocalStorage access guard
+    }
+  }, []);
+
+  const handleAllowLocation = () => {
+    try {
+      localStorage.setItem('has_prompted_location', 'true');
+      localStorage.setItem('location_preference', 'allowed');
+    } catch {
+      // LocalStorage access guard
+    }
+    setShowLocationPrompt(false);
+  };
+
+  const handleDismissLocation = () => {
+    try {
+      localStorage.setItem('has_prompted_location', 'true');
+      localStorage.setItem('location_preference', 'dismissed');
+    } catch {
+      // LocalStorage access guard
+    }
+    setShowLocationPrompt(false);
+  };
 
   const adminTabs = ['admin-dashboard', 'leadership', 'analytics', 'knowledge', 'api'];
 
@@ -169,6 +202,13 @@ export default function App() {
       <FloatingWidget
         isOpen={showWidget}
         onClose={() => setShowWidget(false)}
+      />
+
+      {/* First-Time Location Permission Prompt */}
+      <LocationPromptModal
+        isOpen={showLocationPrompt}
+        onAllow={handleAllowLocation}
+        onDismiss={handleDismissLocation}
       />
     </div>
   );
